@@ -48,7 +48,44 @@ char ** read_file(FILE * f_ptr)
 {
 	int array_current_size = 100;
 	int word_current_size = 256;
+	
+	int char_pos = 0;
+	int array_pos = 0;
+	
+	int copy_data = 0;
+	
+	int c = 0;
+	
 	char ** files_data = init_array(array_current_size, word_current_size);
+	
+	while((c = fgetc(f_ptr))  != EOF)
+	{
+		if(c == '\n' || c == ' ')
+		{
+			copy_data = 0;
+		}
+		else
+		{
+			copy_data = 1;
+		}
+		
+		if(copy_data == 1)
+		{
+			files_data[array_pos][char_pos] = c;
+			char_pos++;
+			copy_data = 0;
+		}
+		
+	}
+	
+	c = 0;
+	while(c < array_current_size)
+	{
+		printf("%s\n", files_data[c]);
+		c++;
+	}
+	
+	fclose(f_ptr);
 }
 
 
