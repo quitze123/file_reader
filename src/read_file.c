@@ -2,6 +2,9 @@
 #include <errno.h>
 #include <stdlib.h>
 
+#define SPACE 32
+#define DEL 127
+
 FILE * open_file(char * input_file_name)
 {
 	FILE * f_ptr;
@@ -44,48 +47,45 @@ char ** init_array(int array_current_size, int word_current_size)
 	return files_data;
 }
 
-char ** read_file(FILE * f_ptr)
+char ** read_words(FILE * f_ptr)
 {
 	int array_current_size = 100;
 	int word_current_size = 256;
 	
-	int char_pos = 0;
 	int array_pos = 0;
-	
-	int copy_data = 0;
+	int char_pos = 0;
 	
 	int c = 0;
 	
 	char ** files_data = init_array(array_current_size, word_current_size);
 	
-	while((c = fgetc(f_ptr))  != EOF)
-	{
-		if(c == '\n' || c == ' ')
+	while(1)
+	{	
+		c = fgetc(f_ptr);
+		
+		if(c > SPACE && c < DEL)
 		{
-			copy_data = 0;
-		}
-		else
-		{
-			copy_data = 1;
+			while(c > SPACE && c < DEL)
+			{
+				files_data[array_pos][char_pos] = c;
+				char_pos++;
+				
+				c = fgetc(f_ptr);
+			}
+			
+			files_data[array_pos][char_pos] = '\0';
+			
+			array_pos++;
+			char_pos = 0;
 		}
 		
-		if(copy_data == 1)
-		{
-			files_data[array_pos][char_pos] = c;
-			char_pos++;
-			copy_data = 0;
-		}
-		
-	}
-	
-	c = 0;
-	while(c < array_current_size)
-	{
-		printf("%s\n", files_data[c]);
-		c++;
+		if(c == EOF)
+			break;
 	}
 	
 	fclose(f_ptr);
+	
+	return files_data;
 }
 
 
@@ -96,7 +96,7 @@ int main(int argc, char ** argv)
 	if(argc != 1)
 	{
 		f_ptr = open_file(argv[1]);
-		files_data = read_file(f_ptr);
+		files_data = read_words(f_ptr);
 	}
 	else
 	{
