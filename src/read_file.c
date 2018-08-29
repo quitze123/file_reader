@@ -54,7 +54,7 @@ int resize_row(char ** files_data, int word_current_size)
 	char * temp = realloc(*files_data, word_current_size * sizeof(char));
 	if(temp == NULL)
 	{
-		perror("malloc(...) failed");
+		perror("realloc(...) failed");
 		exit(EXIT_FAILURE);
 	}
 	
