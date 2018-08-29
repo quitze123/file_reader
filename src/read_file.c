@@ -61,36 +61,7 @@ void resize_row(char ** files_data, int word_current_size)
 	*files_data = temp;
 }
 
-char ** resize_col(char ** files_data, int * array_current_size, int current_pos)
-{
-	int i = 0;
-	int word_size = 100;
-	
-	*array_current_size = *array_current_size * 2;
-	
-	char ** temp = (char **)realloc(files_data, *array_current_size * sizeof(char *));
-	if(temp == NULL)
-	{
-		perror("realloc(...) failed");
-		exit(EXIT_FAILURE);
-	}
-	
-	files_data = temp;
-	
-	for(i = current_pos; i < *array_current_size; i++)
-	{
-		files_data[i] = calloc(word_size, sizeof(char));
-		if(files_data[i] == NULL)
-		{
-			perror("calloc(...) failed");
-			exit(EXIT_FAILURE);
-		}
-	}
-	
-	return files_data;
-}
-
-int resize_col_test(char *** files_data, int array_current_size, int current_pos)
+int resize_col(char *** files_data, int array_current_size, int current_pos)
 {
 	int i = 0;
 	int word_size = 100;
@@ -155,8 +126,7 @@ char ** read_words(FILE * f_ptr)
 			
  			if(array_pos == array_current_size)
 			{
-				//files_data = resize_col(files_data, &array_current_size, array_pos);
-				array_current_size = resize_col_test(&files_data, array_current_size, array_pos);
+				array_current_size = resize_col(&files_data, array_current_size, array_pos);
 			}
 			char_pos = 0;
 		}
