@@ -47,7 +47,7 @@ char ** init_array(int array_current_size, int word_current_size)
 	return files_data;
 }
 
-void resize_row(char ** files_data, int word_current_size)
+int resize_row(char ** files_data, int word_current_size)
 {
 	word_current_size = word_current_size * 2;
 	
@@ -59,16 +59,17 @@ void resize_row(char ** files_data, int word_current_size)
 	}
 	
 	*files_data = temp;
+	return word_current_size;
 }
 
-int resize_col(char *** files_data, int array_current_size, int current_pos)
+int resize_col(char *** files_data, int * array_current_size, int current_pos)
 {
 	int i = 0;
 	int word_size = 100;
 	
-	array_current_size = array_current_size * 2;
+	*array_current_size = *array_current_size * 2;
 	
-	char ** temp = (char **)realloc((*files_data), array_current_size * sizeof(char *));
+	char ** temp = (char **)realloc((*files_data), *array_current_size * sizeof(char *));
 	if(temp == NULL)
 	{
 		perror("realloc(...) failed");
@@ -77,7 +78,7 @@ int resize_col(char *** files_data, int array_current_size, int current_pos)
 	
 	(*files_data) = temp;
 	
-	for(i = current_pos; i < array_current_size; i++)
+	for(i = current_pos; i < *array_current_size; i++)
 	{
 		(*files_data)[i] = calloc(word_size, sizeof(char));
 		if((*files_data)[i] == NULL)
@@ -87,12 +88,12 @@ int resize_col(char *** files_data, int array_current_size, int current_pos)
 		}
 	}
 	
-	return array_current_size;
+	return *array_current_size;
 }
 
-char ** read_words(FILE * f_ptr)
+char ** read_words(FILE * f_ptr, int * array_current_size)
 {
-	int array_current_size = 2;
+	*array_current_size = 100;
 	int word_current_size = 100;
 	
 	int array_pos = 0;
@@ -101,7 +102,7 @@ char ** read_words(FILE * f_ptr)
 	int c = 0;
 	int i = 0;
 	
-	char ** files_data = init_array(array_current_size, word_current_size);
+	char ** files_data = init_array(*array_current_size, word_current_size);
 	
 	while(1)
 	{	
@@ -115,7 +116,7 @@ char ** read_words(FILE * f_ptr)
 				char_pos++;
 				
  				if(char_pos == word_current_size)
-					resize_row(&files_data[array_pos], word_current_size);
+					word_current_size = resize_row(&files_data[array_pos], word_current_size);
 				
 				c = fgetc(f_ptr);
 			}
@@ -124,12 +125,13 @@ char ** read_words(FILE * f_ptr)
 			
 			array_pos++;
 			
- 			if(array_pos == array_current_size)
-			{
-				array_current_size = resize_col(&files_data, array_current_size, array_pos);
-			}
+ 			if(array_pos == *array_current_size)
+				*array_current_size = resize_col(&files_data, array_current_size, array_pos);
+
 			char_pos = 0;
 		}
+		
+		word_current_size = 100;
 		
 		if(c == EOF)
 			break;
@@ -137,25 +139,29 @@ char ** read_words(FILE * f_ptr)
 	
 	fclose(f_ptr);
 	
-	c = 0;
-	while(c < array_current_size)
-	{
-		printf("%s\n", files_data[c]);
-		c++;
-	}
-	
 	return files_data;
 }
 
+void free_data(char ** files_data, int array_size)
+{
+	int i = 0;
+	
+	for(i = 0; i < array_size; i++)
+		free(files_data[i]);
+	
+	free(files_data);
+}
 
 int main(int argc, char ** argv)
 {
 	FILE * f_ptr;
 	char ** files_data;
+	int array_size = 0;
 	if(argc != 1)
 	{
 		f_ptr = open_file(argv[1]);
-		files_data = read_words(f_ptr);
+		files_data = read_words(f_ptr, &array_size);
+		free_data(files_data, array_size);
 	}
 	else
 	{
