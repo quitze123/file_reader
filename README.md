@@ -1,6 +1,20 @@
-<h1>WORD READER</h1>
-
-<p>Each word from a file is read into its own individual row.</p> 
-
-
-
+# WORD READER
+## Example:
+### Input:
+#### This is a      line    with multiple     spaces   . And multiple
+####
+####
+#### new       lines.
+### Output:
+#### This
+#### is
+#### a
+#### line
+#### with
+#### muiltiple
+#### spaces
+#### .
+#### And
+#### multiple
+#### new
+#### lines.
