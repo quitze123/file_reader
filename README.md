@@ -4,7 +4,7 @@
     This is a line with multiple     spaces   . And multiple
     
     
-    new       lines.
+    new       lines.	Tabs are    not ignored. !@#@#$%%^^((
 ### Output:
     This
     is
@@ -18,3 +18,8 @@
     multiple
     new
     lines.
+    	Tabs
+    are
+    not
+    ignored.
+    !@#@#$%%^^((
