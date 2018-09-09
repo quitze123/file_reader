@@ -6,7 +6,7 @@
 ####
 #### new       lines.
 ### Output:
-#### This
+    This
 #### is
 #### a  
 #### line  
